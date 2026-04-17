@@ -261,7 +261,86 @@
       color: #b91c1c;
       font-weight: 600;
     }
+    /* Autocomplete dropdown */
+    .ac-dropdown {
+      display: none;
+      position: absolute;
+      z-index: 9999;
+      left: 0; right: 0;
+      top: 100%;
+      margin: 2px 0 0;
+      padding: 4px 0;
+      list-style: none;
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      border-radius: 9px;
+      box-shadow: 0 8px 24px rgba(5,41,66,.14);
+      max-height: 210px;
+      overflow-y: auto;
+    }
+    .ac-dropdown.open { display: block; }
+    .ac-dropdown li {
+      padding: 7px 12px;
+      font-size: .82rem;
+      color: var(--text-main);
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ac-dropdown li:hover,
+    .ac-dropdown li.ac-active { background: #e8f0fb; }
+
     .validation-banner.visible { display: block; }
+
+    /* Confirm submit modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: rgba(11,48,69,.65);
+      backdrop-filter: blur(5px);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 18px;
+      padding: 28px 30px 24px;
+      max-width: 420px;
+      width: 90vw;
+      box-shadow: 0 24px 60px rgba(5,41,66,.35);
+      text-align: center;
+    }
+    .modal-icon {
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+    }
+    .modal-title {
+      font-family: "Montserrat", sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--vista-blue-dark);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    .modal-body {
+      font-size: .84rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .modal-body strong { color: var(--text-main); }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .modal-actions button { min-width: 110px; }
 
     .version-tag{
       margin-top:6px;
@@ -347,9 +426,10 @@
         </div>
 
         <div class="grid-3">
-          <div>
+          <div style="position:relative;">
             <label for="client">Client</label>
-            <input type="text" id="client" name="client" placeholder="e.g., Vermilion">
+            <input type="text" id="client" name="client" placeholder="e.g., Vermilion" autocomplete="off">
+            <ul id="clientSuggest" class="ac-dropdown"></ul>
           </div>
           <div>
             <label for="job_no">Job Number</label>
@@ -513,9 +593,10 @@
             <label for="site_name">Site / Area</label>
             <input type="text" id="site_name" name="site_name" placeholder="Optional">
           </div>
-          <div>
+          <div style="position:relative;">
             <label for="completed_by">Completed By</label>
-            <input type="text" id="completed_by" name="completed_by" placeholder="P1 / party chief">
+            <input type="text" id="completed_by" name="completed_by" placeholder="P1 / party chief" autocomplete="off">
+            <ul id="completedBySuggest" class="ac-dropdown"></ul>
           </div>
         </div>
 
@@ -626,9 +707,10 @@
                 <label for="accom_location">Accommodation Location</label>
                 <input type="text" id="accom_location" name="accom_location" list="albertaPlaces" placeholder="Select or type">
               </div>
-              <div>
+              <div style="position:relative;">
                 <label for="accom_booked_under">Booked Under</label>
-                <input type="text" id="accom_booked_under" name="accom_booked_under" list="personnelNameOptions" placeholder="Select or type">
+                <input type="text" id="accom_booked_under" name="accom_booked_under" placeholder="Select or type" autocomplete="off">
+                <ul id="accomBookedSuggest" class="ac-dropdown"></ul>
               </div>
               <div>
                 <label for="accom_rooms">Number of Rooms</label>
@@ -689,8 +771,21 @@
   </div>
 </div>
 
+<!-- Submit confirmation modal -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <div class="modal-icon">📋</div>
+    <div class="modal-title">Ready to Submit?</div>
+    <div class="modal-body" id="submitModalBody">
+      Please confirm all information is complete and accurate before submitting.
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="modalCancelBtn">Go Back</button>
+      <button type="button" class="btn-primary" id="modalConfirmBtn">Yes, Submit</button>
+    </div>
+  </div>
+</div>
 
-<!-- Datalists -->
 
 <datalist id="equipNameOptions">
 
@@ -709,7 +804,9 @@
   <option value="Total Station"></option>
   <option value="Survey Equipment"></option>
   <option value="Drone"></option>
-    </datalist>
+  <option value="Chainsaw"></option>
+  <option value="Pipe Locator"></option>
+</datalist>
 
 
 <datalist id="roadOptions">
@@ -977,7 +1074,7 @@
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><input type="text" class="small-input" name="p_role[]" value="${role || ''}"></td>
-      <td><input type="text" class="small-input" name="p_name[]"></td>
+      <td style="position:relative;"><input type="text" class="small-input" name="p_name[]" autocomplete="off"><ul class="ac-dropdown ac-name-drop"></ul></td>
       <td><input type="text" class="small-input" name="p_work[]"></td>
       <td><input type="text" class="small-input" name="p_travel[]"></td>
       <td><input type="text" class="small-input" name="p_calc[]"></td>
@@ -1226,7 +1323,7 @@ function refreshEquipNameOptions(){
     tr.innerHTML = `
       <td><input type="time" class="small-input" name="w_start[]"></td>
       <td><input type="time" class="small-input" name="w_end[]"></td>
-      <td><input type="text" class="small-input" name="w_desc[]" placeholder="e.g., Travel to site, Set up GPS, Tie-in, Calcs, Notes"></td>
+      <td style="position:relative;"><input type="text" class="small-input" name="w_desc[]" placeholder="e.g., Travel to site, Set up GPS, Tie-in, Calcs, Notes" autocomplete="off"><ul class="ac-dropdown ac-work-drop"></ul></td>
     `;
     if (values && Array.isArray(values)) {
       const inputs = tr.querySelectorAll('input.small-input');
@@ -1255,7 +1352,7 @@ function refreshEquipNameOptions(){
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><input type="text" class="small-input" name="meal_role[]" value="${role || ''}"></td>
-      <td><input type="text" class="small-input" name="meal_name[]" list="personnelNameOptions" placeholder="Select or type"></td>
+      <td style="position:relative;"><input type="text" class="small-input" name="meal_name[]" placeholder="Select or type" autocomplete="off"><ul class="ac-dropdown ac-name-drop"></ul></td>
       <td><input type="text" class="small-input" name="meal_total[]" placeholder="$"></td>
     `;
     if (values && Array.isArray(values)) {
@@ -1675,16 +1772,24 @@ function refreshEquipNameOptions(){
       Array.from(tr.querySelectorAll('input.small-input')).some(i => i.value.trim())
     );
     if (!hasLoc) {
-      errors.push('At least one Location');
-      // highlight the table header area
+      errors.push('At least one Location entry');
       const locSection = document.getElementById('locTable');
       if (locSection) {
         const wrap = locSection.closest('.section-card') || locSection.parentElement;
-        const title = wrap.querySelector('.section-title');
-        if (title) {
-          title.style.color = '#dc2626';
-          setTimeout(() => { title.style.color = ''; }, 4000);
-        }
+        // Red border on the whole locations card
+        wrap.style.outline = '2px solid #dc2626';
+        wrap.style.outlineOffset = '-2px';
+        setTimeout(() => { wrap.style.outline = ''; wrap.style.outlineOffset = ''; }, 4000);
+        // Also mark first row inputs
+        const firstRowInputs = locBody.querySelectorAll('tr:first-child input.small-input');
+        firstRowInputs.forEach(inp => {
+          const parent = inp.closest('td');
+          if (parent) {
+            inp.style.borderColor = '#dc2626';
+            inp.style.background = '#fff5f5';
+            setTimeout(() => { inp.style.borderColor = ''; inp.style.background = ''; }, 4000);
+          }
+        });
       }
     }
 
@@ -1855,26 +1960,295 @@ function refreshEquipNameOptions(){
     });
   }
 
-  // Submit: validates → generates PDF → downloads it → opens mailto
-  if (submitBtn){
-    submitBtn.addEventListener('click', async () => {
-      if (!validateForm()) return;
+  // =====================================================
+  // AUTOCOMPLETE ENGINE
+  // =====================================================
+
+  // --- Client data (aliases → canonical name) ---
+  const CLIENT_MAP = [
+    { keys: ['cnrl','canadian natural','canadian natural resources','canadian natural resources limited'], label: 'Canadian Natural Resources Limited' },
+    { keys: ['vermilion','vermilion energy'], label: 'Vermilion Energy' },
+    { keys: ['shell','shell canada'],         label: 'Shell Canada' },
+    { keys: ['cavvy','cavvy energy'],         label: 'Cavvy Energy' },
+    { keys: ['stantec'],                      label: 'Stantec' },
+    { keys: ['strathcona','strathcona resources','strathcona resources ltd','strathcona resources ltd.'], label: 'Strathcona Resources Ltd.' },
+  ];
+
+  // --- Staff names ---
+  const STAFF_NAMES = [
+    'Raymond Halldorson',
+    'Jason Welcher',
+    'Trent Armstrong',
+    'Marc Boudreau',
+  ];
+
+  // --- Work description suggestions ---
+  const WORK_DESCS = [
+    'Travel',
+    'Base Set Up',
+    'Set Up GPS',
+    'Tie-in',
+    'Flagging',
+    'Calculations',
+    'Notes',
+  ];
+
+  /**
+   * Generic autocomplete binder.
+   * @param {HTMLInputElement} inp
+   * @param {HTMLUListElement} list
+   * @param {function(string): string[]} getSuggestions  - returns array of display strings for a query
+   * @param {function(string): string}  [onSelect]       - optional transform when user picks (default: use as-is)
+   */
+  function bindAC(inp, list, getSuggestions, onSelect) {
+    if (!inp || !list) return;
+    let activeIdx = -1;
+
+    function getItems() { return Array.from(list.querySelectorAll('li')); }
+
+    function setActive(idx) {
+      const items = getItems();
+      items.forEach(li => li.classList.remove('ac-active'));
+      activeIdx = Math.max(-1, Math.min(idx, items.length - 1));
+      if (activeIdx >= 0) items[activeIdx].classList.add('ac-active');
+    }
+
+    function close() {
+      list.classList.remove('open');
+      list.innerHTML = '';
+      activeIdx = -1;
+    }
+
+    function open(suggestions) {
+      list.innerHTML = '';
+      activeIdx = -1;
+      if (!suggestions.length) { close(); return; }
+      suggestions.forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        li.addEventListener('mousedown', e => {
+          e.preventDefault();
+          pick(text);
+        });
+        list.appendChild(li);
+      });
+      list.classList.add('open');
+    }
+
+    function pick(text) {
+      inp.value = onSelect ? onSelect(text) : text;
+      close();
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+      saveDraft();
+    }
+
+    inp.addEventListener('input', () => {
+      const q = inp.value.trim().toLowerCase();
+      if (!q) { close(); return; }
+      open(getSuggestions(q));
+    });
+
+    inp.addEventListener('focus', () => {
+      const q = inp.value.trim().toLowerCase();
+      if (q) open(getSuggestions(q));
+    });
+
+    inp.addEventListener('blur', () => setTimeout(close, 150));
+
+    inp.addEventListener('keydown', e => {
+      const items = getItems();
+      if (!list.classList.contains('open')) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(activeIdx + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(activeIdx <= 0 ? -1 : activeIdx - 1); }
+      else if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); pick(items[activeIdx].textContent); }
+      else if (e.key === 'Escape') { close(); }
+    });
+  }
+
+  // --- Client autocomplete: match on any alias, resolve to canonical ---
+  function clientSuggestions(q) {
+    const seen = new Set();
+    return CLIENT_MAP
+      .filter(entry => entry.keys.some(k => k.includes(q) || q.includes(k.slice(0, Math.min(k.length, q.length)))))
+      .map(entry => entry.label)
+      .filter(label => { if (seen.has(label)) return false; seen.add(label); return true; });
+  }
+  function clientResolve(text) {
+    // If selected label is already canonical, return it; always canonical from our list
+    return text;
+  }
+  // Also expand on blur if typed value exactly matches an alias
+  function expandClientOnBlur() {
+    const inp = document.getElementById('client');
+    if (!inp) return;
+    const q = inp.value.trim().toLowerCase();
+    for (const entry of CLIENT_MAP) {
+      if (entry.keys.includes(q)) { inp.value = entry.label; saveDraft(); break; }
+    }
+  }
+  const clientInp = document.getElementById('client');
+  if (clientInp) clientInp.addEventListener('blur', expandClientOnBlur);
+
+  bindAC(
+    document.getElementById('client'),
+    document.getElementById('clientSuggest'),
+    clientSuggestions,
+    clientResolve
+  );
+
+  // --- Staff name autocomplete: match on any part ---
+  function staffSuggestions(q) {
+    return STAFF_NAMES.filter(n => n.toLowerCase().includes(q));
+  }
+
+  bindAC(document.getElementById('completed_by'),    document.getElementById('completedBySuggest'),  staffSuggestions);
+  bindAC(document.getElementById('accom_booked_under'), document.getElementById('accomBookedSuggest'), staffSuggestions);
+
+  // --- Wire name/meal/work rows that are added dynamically ---
+  // We patch initEvidencePage-style: after createPersonnelRow / createWorkRow / createMealRow,
+  // bind AC to the newly created inputs.
+
+  const _origCreatePersonnelRow = createPersonnelRow;
+  // Already defined above; we hook in via MutationObserver on personnelBody + mealsBody + workBody
+
+  function bindACToNameInput(inp) {
+    const list = inp.closest('td')?.querySelector('.ac-name-drop') ||
+                 inp.parentElement?.querySelector('.ac-name-drop');
+    if (!inp || !list) return;
+    bindAC(inp, list, staffSuggestions);
+  }
+
+  function bindACToWorkInput(inp) {
+    const list = inp.closest('td')?.querySelector('.ac-work-drop') ||
+                 inp.parentElement?.querySelector('.ac-work-drop');
+    if (!inp || !list) return;
+    bindAC(inp, list, q => WORK_DESCS.filter(d => d.toLowerCase().includes(q)));
+  }
+
+  function bindACToNewRows(tbody, nameSelector, workSelector) {
+    new MutationObserver(mutations => {
+      mutations.forEach(m => {
+        m.addedNodes.forEach(node => {
+          if (node.nodeType !== 1) return;
+          if (nameSelector) node.querySelectorAll(nameSelector).forEach(bindACToNameInput);
+          if (workSelector) node.querySelectorAll(workSelector).forEach(bindACToWorkInput);
+        });
+      });
+    }).observe(tbody, { childList: true });
+
+    // Also bind to any rows already in the DOM at init time
+    if (nameSelector) tbody.querySelectorAll(nameSelector).forEach(bindACToNameInput);
+    if (workSelector) tbody.querySelectorAll(workSelector).forEach(bindACToWorkInput);
+  }
+
+  // Wire up once DOM is ready (tables populated by loadDraft / ensureDefaults)
+  setTimeout(() => {
+    if (personnelBody) bindACToNewRows(personnelBody, 'input[name="p_name[]"]', null);
+    if (mealsBody)     bindACToNewRows(mealsBody,     'input[name="meal_name[]"]', null);
+    if (workBody)      bindACToNewRows(workBody,      null, 'input[name="w_desc[]"]');
+  }, 0);
+
+
+  const submitModal   = document.getElementById('submitModal');
+  const modalCancelBtn  = document.getElementById('modalCancelBtn');
+  const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+  const submitModalBody = document.getElementById('submitModalBody');
+
+  function showSubmitModal() {
+    // Pre-fill summary in modal
+    const client = (document.getElementById('client')?.value || '').trim();
+    const job    = (document.getElementById('job_no')?.value || '').trim();
+    const date   = (document.getElementById('date')?.value || '').trim();
+    let summary  = 'Please confirm all information is complete and accurate.';
+    if (client || job || date) {
+      const parts = [];
+      if (client) parts.push('<strong>Client:</strong> ' + client);
+      if (job)    parts.push('<strong>Job:</strong> ' + job);
+      if (date)   parts.push('<strong>Date:</strong> ' + date);
+      summary = parts.join(' &nbsp;·&nbsp; ') + '<br><br>Once submitted the PDF will download and this form will be cleared.';
+    }
+    submitModalBody.innerHTML = summary;
+    submitModal.classList.add('active');
+  }
+
+  function hideSubmitModal() {
+    submitModal.classList.remove('active');
+  }
+
+  function fullReset() {
+    // Clear localStorage
+    localStorage.removeItem(STORAGE_KEY);
+    // Signatures
+    ['sig_pc','sig_client'].forEach(id => {
+      const c = document.getElementById(id);
+      if (c) { c.getContext('2d').clearRect(0, 0, c.width, c.height); }
+    });
+    try { localStorage.removeItem('vista_ts_sig_pc'); } catch(e){}
+    try { localStorage.removeItem('vista_ts_sig_client'); } catch(e){}
+    // Tables
+    if (personnelBody) personnelBody.innerHTML = '';
+    if (equipBody)     equipBody.innerHTML = '';
+    if (matBody)       matBody.innerHTML = '';
+    if (workBody)      workBody.innerHTML = '';
+    if (mealsBody)     mealsBody.innerHTML = '';
+    if (locBody)       locBody.innerHTML = '';
+    // Single fields
+    const singleIds = [
+      'client','job_no','date',
+      'odo_start','odo_finish','odo_total',
+      'client_contact','site_name','completed_by',
+      'weather','temp_c','wind_kmh','road_conditions','rental_equipment','rental_cost',
+      'accom_name','accom_location','accom_booked_under','accom_rooms','accom_cost_day','accom_tax','accom_total','accom_notes'
+    ];
+    singleIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = '';
+      if (el.dataset) el.dataset.autofill = '';
+    });
+    // Re-init defaults
+    ensureDefaultLocations();
+    ensureDefaultPersonnel();
+    refreshEquipNameOptions();
+    refreshPersonnelNameOptions();
+    refreshMealNameOptions();
+    syncCompletedByFromPC();
+    ensureDefaultEquip();
+    ensureDefaultMaterials();
+    ensureDefaultWorkRows();
+    ensureDefaultMeals();
+    updateOdoTotal();
+    updateDailyTotal();
+    updateAccomTotals();
+    clearErrors();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (modalCancelBtn) modalCancelBtn.addEventListener('click', hideSubmitModal);
+  // Close on overlay click
+  if (submitModal) submitModal.addEventListener('click', e => {
+    if (e.target === submitModal) hideSubmitModal();
+  });
+
+  if (modalConfirmBtn) {
+    modalConfirmBtn.addEventListener('click', async () => {
+      hideSubmitModal();
 
       const filename = getFilename();
       const pdf = await generatePdf();
       pdf.save(filename);
 
       const client = (document.getElementById('client')?.value || '').trim();
-      const job = (document.getElementById('job_no')?.value || '').trim();
-      const date = (document.getElementById('date')?.value || '').trim();
+      const job    = (document.getElementById('job_no')?.value || '').trim();
+      const date   = (document.getElementById('date')?.value || '').trim();
 
       const subject = 'Daily Timesheet - ' + filename;
       const bodyLines = [
         'Please find the daily timesheet attached.',
         '',
         client ? 'Client: ' + client : '',
-        job ? 'Job Number: ' + job : '',
-        date ? 'Date: ' + date : '',
+        job    ? 'Job Number: ' + job : '',
+        date   ? 'Date: ' + date : '',
         '',
         'Attach the downloaded PDF before sending.',
         '',
@@ -1884,6 +2258,16 @@ function refreshEquipNameOptions(){
       window.location.href = 'mailto:jasonw@vistageomatics.com'
         + '?subject=' + encodeURIComponent(subject)
         + '&body=' + bodyLines;
+
+      // Reset only after successful submission path
+      setTimeout(fullReset, 800);
+    });
+  }
+
+  if (submitBtn){
+    submitBtn.addEventListener('click', () => {
+      if (!validateForm()) return;
+      showSubmitModal();
     });
   }</script>
 </body>
