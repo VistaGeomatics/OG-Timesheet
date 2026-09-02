@@ -293,6 +293,18 @@
 
     .validation-banner.visible { display: block; }
 
+    .required-mark{
+      color:#dc2626;
+      font-weight:700;
+      margin-left:2px;
+    }
+    .required-note{
+      font-size:.72rem;
+      color:var(--text-muted);
+      margin-top:4px;
+    }
+    .required-note .required-mark{margin-left:0;}
+
     /* Confirm submit modal */
     .modal-overlay {
       display: none;
@@ -382,12 +394,86 @@
       margin-top:8px;
     }
 
+    /* Personnel dropdowns must float over the form instead of being trapped in a scroll box */
+    .personnel-table-wrap{overflow:visible !important;}
+    #personnelTable td{overflow:visible !important;}
+    #personnelTable .ac-dropdown{z-index:100000;min-width:220px;max-height:none;overflow:visible;}
+    #personnelTable .ac-dropdown li{padding:9px 12px;font-size:.82rem;}
+
 @media (max-width: 768px){
       .header-bar{flex-direction:column;align-items:flex-start;}
       .page-title-main{font-size:1.08rem;letter-spacing:.12em;}
       th,td{padding:3px 2px;font-size:.7rem;}
       .small-input{padding:4px 4px;font-size:.7rem;}
     }
+
+    /* One-page PDF export mode: compact, clean legal-size presentation */
+    #sheetContainer.pdf-export-mode{
+      width:980px !important;
+      max-width:980px !important;
+      border-radius:0 !important;
+      box-shadow:none !important;
+      background:#fff !important;
+    }
+    #sheetContainer.pdf-export-mode::before{display:none !important;}
+    #sheetContainer.pdf-export-mode .header-bar{padding:7px 14px !important;}
+    #sheetContainer.pdf-export-mode .header-left h1{font-size:1.08rem !important;letter-spacing:.13em !important;}
+    #sheetContainer.pdf-export-mode .header-left p{font-size:.68rem !important;margin-top:1px !important;}
+    #sheetContainer.pdf-export-mode .header-logo{height:42px !important;}
+    #sheetContainer.pdf-export-mode .page-title-bar{padding:6px 14px 5px !important;}
+    #sheetContainer.pdf-export-mode .page-title-main{font-size:1.02rem !important;letter-spacing:.11em !important;}
+    #sheetContainer.pdf-export-mode .page-title-sub,
+    #sheetContainer.pdf-export-mode .section-note,
+    #sheetContainer.pdf-export-mode .hint,
+    #sheetContainer.pdf-export-mode .version-tag,
+    #sheetContainer.pdf-export-mode .btn-row,
+    #sheetContainer.pdf-export-mode .sig-actions{display:none !important;}
+    #sheetContainer.pdf-export-mode .page-title-accent{width:110px !important;height:2px !important;margin-top:4px !important;}
+    #sheetContainer.pdf-export-mode form{padding:4px 9px 7px !important;font-size:.69rem !important;}
+    #sheetContainer.pdf-export-mode .section-card{
+      margin-top:4px !important;
+      padding:5px 6px 6px !important;
+      border-radius:7px !important;
+      box-shadow:none !important;
+      background:#fff !important;
+    }
+    #sheetContainer.pdf-export-mode .section-card::before{height:2px !important;border-radius:7px 7px 0 0 !important;}
+    #sheetContainer.pdf-export-mode .section-header{margin-bottom:3px !important;}
+    #sheetContainer.pdf-export-mode .section-title{font-size:.73rem !important;letter-spacing:.04em !important;}
+    #sheetContainer.pdf-export-mode .grid-2,
+    #sheetContainer.pdf-export-mode .grid-3{gap:4px !important;}
+    #sheetContainer.pdf-export-mode label{font-size:.64rem !important;margin-bottom:2px !important;}
+    #sheetContainer.pdf-export-mode input[type="text"],
+    #sheetContainer.pdf-export-mode input[type="date"],
+    #sheetContainer.pdf-export-mode input[type="time"],
+    #sheetContainer.pdf-export-mode input[type="number"],
+    #sheetContainer.pdf-export-mode select,
+    #sheetContainer.pdf-export-mode textarea,
+    #sheetContainer.pdf-export-mode .small-input{
+      padding:2px 4px !important;
+      min-height:20px !important;
+      border-radius:3px !important;
+      font-size:.64rem !important;
+      line-height:1.15 !important;
+      background:#fff !important;
+      box-shadow:none !important;
+    }
+    #sheetContainer.pdf-export-mode textarea{min-height:32px !important;height:32px !important;}
+    #sheetContainer.pdf-export-mode table{margin-top:2px !important;font-size:.62rem !important;}
+    #sheetContainer.pdf-export-mode th,
+    #sheetContainer.pdf-export-mode td{padding:1px 2px !important;}
+    #sheetContainer.pdf-export-mode th{background:#edf4fa !important;}
+    #sheetContainer.pdf-export-mode .pill{padding:2px 6px !important;font-size:.61rem !important;}
+    #sheetContainer.pdf-export-mode .sig-wrap{padding:3px !important;border-radius:5px !important;}
+    #sheetContainer.pdf-export-mode .sig-canvas{height:42px !important;border-radius:4px !important;}
+    #sheetContainer.pdf-export-mode .table-wrap{overflow:visible !important;}
+    #sheetContainer.pdf-export-mode .equip-item{min-width:150px !important;}
+
+    /* Receipt attachment */
+    .receipt-upload{margin-top:8px;padding:8px;border:1px dashed #b8cbe0;border-radius:9px;background:#fff;}
+    .receipt-upload input[type="file"]{width:100%;font-size:.76rem;}
+    .receipt-files{margin-top:5px;font-size:.72rem;color:var(--text-muted);line-height:1.4;}
+    #sheetContainer.pdf-export-mode .receipt-upload{display:none !important;}
 
     /* Print: hide buttons */
     @media print{
@@ -427,23 +513,23 @@
 
         <div class="grid-3">
           <div style="position:relative;">
-            <label for="client">Client</label>
+            <label for="client">Client <span class="required-mark">*</span></label>
             <input type="text" id="client" name="client" placeholder="e.g., Vermilion" autocomplete="off">
             <ul id="clientSuggest" class="ac-dropdown"></ul>
           </div>
           <div>
-            <label for="job_no">Job Number</label>
+            <label for="job_no">Job Number <span class="required-mark">*</span></label>
             <input type="text" id="job_no" name="job_no" placeholder="e.g., 23121003">
           </div>
           <div>
-            <label for="date">Date</label>
+            <label for="date">Date <span class="required-mark">*</span></label>
             <input type="date" id="date" name="date">
           </div>
         </div>
 
         <div class="section-card" style="margin-top:10px;">
           <div class="section-header">
-            <div class="section-title">Locations</div>
+            <div class="section-title">Locations <span class="required-mark">*</span></div>
             <div class="section-note">Add one or more legal locations.</div>
           </div>
 
@@ -474,13 +560,13 @@
       <!-- PERSONNEL -->
       <div class="section-card">
         <div class="section-header">
-          <div class="section-title">Personnel</div>
+          <div class="section-title">Personnel <span class="required-mark">*</span></div>
           <div class="kpi">
             <span class="pill">Daily total hours, <strong id="dailyTotal">0</strong></span>
           </div>
         </div>
 
-        <div class="table-wrap">
+        <div class="table-wrap personnel-table-wrap">
           <table id="personnelTable">
             <thead>
               <tr>
@@ -580,13 +666,13 @@
       <!-- CLIENT CONTACT + WORK PERFORMED -->
       <div class="section-card">
         <div class="section-header">
-          <div class="section-title">Client Field Contact, Work Performed</div>
+          <div class="section-title">Client Field Contact, Work Performed <span class="required-mark">*</span></div>
           <div class="section-note">Use one row per task or time block.</div>
         </div>
 
         <div class="grid-3">
           <div>
-            <label for="client_contact">Client Field Contact</label>
+            <label for="client_contact">Client Field Contact <span class="required-mark">*</span></label>
             <input type="text" id="client_contact" name="client_contact" placeholder="Name, phone (if provided)">
           </div>
           <div>
@@ -627,7 +713,7 @@
 
         <div class="grid-3">
           <div>
-            <label for="weather">Weather</label>
+            <label for="weather">Weather <span class="required-mark">*</span></label>
             <select id="weather" name="weather">
               <option value="">Select</option>
               <option>Clear</option>
@@ -640,18 +726,18 @@
             </select>
           </div>
           <div>
-            <label for="temp_c">Temp (°C)</label>
+            <label for="temp_c">Temp (°C) <span class="required-mark">*</span></label>
             <input type="text" id="temp_c" name="temp_c" placeholder="e.g., -5">
           </div>
           <div>
-            <label for="wind_kmh">Wind (km/h)</label>
+            <label for="wind_kmh">Wind (km/h) <span class="required-mark">*</span></label>
             <input type="text" id="wind_kmh" name="wind_kmh" placeholder="e.g., 5">
           </div>
         </div>
 
         <div class="grid-3" style="margin-top:8px;">
           <div>
-            <label for="road_conditions">Road Conditions</label>
+            <label for="road_conditions">Road Conditions <span class="required-mark">*</span></label>
             <input type="text" id="road_conditions" name="road_conditions" list="roadOptions" placeholder="Select or type">
           </div>
         </div>
@@ -734,6 +820,12 @@
               <label for="accom_notes">Accommodation Notes</label>
               <textarea id="accom_notes" name="accom_notes" placeholder="Room count, receipts, notes, etc."></textarea>
             </div>
+
+            <div class="receipt-upload">
+              <label for="expense_receipts">Meal / Accommodation Receipt</label>
+              <input type="file" id="expense_receipts" name="expense_receipts" accept="image/*,.pdf,application/pdf" multiple>
+              <div class="receipt-files" id="receiptFiles">Attach receipt image(s) or PDF(s). Attached receipts will be added after the timesheet in the downloaded/submitted PDF.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -741,7 +833,7 @@
       <!-- SIGNATURES -->
       <div class="section-card">
         <div class="section-header">
-          <div class="section-title">Signatures</div>
+          <div class="section-title">Signatures <span class="required-mark">*</span></div>
           <div class="section-note">Use digital signature if desired, or sign on the PDF after download.</div>
         </div>
 
@@ -757,6 +849,7 @@
         </div>
       </div>
 
+      <div class="required-note"><span class="required-mark">*</span> Required field / section</div>
       <div class="validation-banner" id="validationBanner"></div>
 
       <!-- Buttons -->
@@ -766,7 +859,7 @@
         <button type="button" class="btn-primary" id="submitBtn">Submit</button>
       </div>
 
-      <div class="version-tag">Daily Timesheet v2.6</div>
+      <div class="version-tag">Daily Timesheet v2.8</div>
     </form>
   </div>
 </div>
@@ -979,9 +1072,10 @@
 <!-- jsPDF + html2canvas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
 <script>
-  const STORAGE_KEY = 'vistaDailyTimesheet_v2_6';
+  const STORAGE_KEY = 'vistaDailyTimesheet_v2_7';
 
   const form = document.getElementById('timesheetForm');
   const sheetContainer = document.getElementById('sheetContainer');
@@ -1539,7 +1633,6 @@ function refreshEquipNameOptions(){
 
       // rebuild tables
       if (Array.isArray(data.personnel) && data.personnel.length){
-        if (locBody) locBody.innerHTML = '';
         personnelBody.innerHTML = '';
         data.personnel.forEach(vals => personnelBody.appendChild(createPersonnelRow('', vals)));
       } else ensureDefaultPersonnel();
@@ -1564,6 +1657,7 @@ function refreshEquipNameOptions(){
         data.meals.forEach(vals => mealsBody.appendChild(createMealRow('', vals)));
       } else ensureDefaultMeals();
 
+      ensureDefaultLocations();
       updateOdoTotal();
       updateDailyTotal();
     } catch(e){
@@ -1885,7 +1979,84 @@ function refreshEquipNameOptions(){
     return true;
   }
 
-// ---------- PDF GENERATION ----------
+// ---------- RECEIPTS ----------
+  const receiptInput = document.getElementById('expense_receipts');
+  const receiptFilesEl = document.getElementById('receiptFiles');
+
+  function refreshReceiptFiles(){
+    if (!receiptFilesEl || !receiptInput) return;
+    const files = Array.from(receiptInput.files || []);
+    receiptFilesEl.textContent = files.length
+      ? files.map(f => f.name).join(', ')
+      : 'Attach receipt image(s) or PDF(s). Attached receipts will be added after the timesheet in the downloaded/submitted PDF.';
+  }
+  if (receiptInput) receiptInput.addEventListener('change', refreshReceiptFiles);
+
+  async function appendReceiptsToPdf(jsPdfDoc){
+    const files = Array.from(receiptInput?.files || []);
+    if (!files.length) return jsPdfDoc;
+    if (!window.PDFLib) throw new Error('PDF attachment library did not load. Please refresh and try again.');
+
+    const { PDFDocument } = window.PDFLib;
+    const baseBytes = jsPdfDoc.output('arraybuffer');
+    const out = await PDFDocument.load(baseBytes);
+
+    for (const file of files){
+      const bytes = await file.arrayBuffer();
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')){
+        const src = await PDFDocument.load(bytes);
+        const pages = await out.copyPages(src, src.getPageIndices());
+        pages.forEach(page => out.addPage(page));
+      } else if (file.type.startsWith('image/')){
+        let embedded;
+        if (file.type === 'image/png' || file.name.toLowerCase().endsWith('.png')) embedded = await out.embedPng(bytes);
+        else embedded = await out.embedJpg(bytes);
+        const page = out.addPage([612, 792]); // Letter portrait receipt page
+        const margin = 30;
+        const maxW = page.getWidth() - margin * 2;
+        const maxH = page.getHeight() - margin * 2;
+        const scale = Math.min(maxW / embedded.width, maxH / embedded.height, 1);
+        const w = embedded.width * scale, h = embedded.height * scale;
+        page.drawImage(embedded, { x:(page.getWidth()-w)/2, y:(page.getHeight()-h)/2, width:w, height:h });
+      }
+    }
+
+    return await out.save();
+  }
+
+  function savePdfResult(result, filename){
+    if (result && typeof result.save === 'function') {
+      result.save(filename);
+      return;
+    }
+    const blob = result instanceof Blob ? result : new Blob([result], {type:'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      a.remove();
+    }, 2000);
+  }
+
+  async function buildFinalPdf(){
+    const pdf = await generatePdf();
+    const files = Array.from(receiptInput?.files || []);
+    if (!files.length) return pdf;
+    try {
+      return await appendReceiptsToPdf(pdf);
+    } catch (err) {
+      console.error('Receipt merge failed; downloading timesheet without receipt attachment.', err);
+      alert('The timesheet PDF was created, but one or more receipts could not be added. The timesheet will download without the receipt attachment.');
+      return pdf;
+    }
+  }
+
+  // ---------- PDF GENERATION ----------
   const downloadBtn = document.getElementById('downloadBtn');
   const submitBtn = document.getElementById('submitBtn');
 
@@ -1900,63 +2071,278 @@ function refreshEquipNameOptions(){
   }
 
   function getFilename(){
-    const dateStr = friendlyDateForFilename();
-    const job  = (document.getElementById('job_no')?.value || '').trim();
-
-    let base = 'Daily Timesheet';
-    if (dateStr) base = dateStr;
-    if (job) base += ' - ' + job.replace(/\s+/g, ' ');
-
-    return base + '.pdf';
+    const job = (document.getElementById('job_no')?.value || '').trim();
+    const rows = Array.from(document.querySelectorAll('#personnelBody tr'));
+    let pc = '';
+    for (const row of rows){
+      const role = (row.querySelector('input[name="p_role[]"]')?.value || '').trim().toUpperCase();
+      if (role === 'PC' || role.includes('PARTY CHIEF')) {
+        pc = (row.querySelector('input[name="p_name[]"]')?.value || '').trim();
+        break;
+      }
+    }
+    const safe = v => String(v || '').replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim();
+    const parts = [safe(pc) || 'Party Chief', safe(job) || 'Job Number'];
+    return parts.join(' - ') + '.pdf';
   }
 
   async function generatePdf(){
+    if (!window.jspdf || !window.jspdf.jsPDF) throw new Error('jsPDF did not load.');
     const { jsPDF } = window.jspdf;
-    // Legal size: 8.5 x 14 inches = 215.9 x 355.6 mm
-    const pdf = new jsPDF('p', 'mm', [215.9, 355.6]);
+    const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:[215.9,355.6], compress:true });
 
-    const originalDisplay = buttonRow.style.display;
-    const bannerDisplay = validationBanner ? validationBanner.style.display : '';
-    buttonRow.style.display = 'none';
-    if (validationBanner) validationBanner.style.display = 'none';
+    const PAGE_W = pdf.internal.pageSize.getWidth();
+    const PAGE_H = pdf.internal.pageSize.getHeight();
+    const M = 10;
+    const CONTENT_W = PAGE_W - M * 2;
+    const BLUE = [22,95,125];
+    const DARK = [11,48,69];
+    const LIGHT = [235,244,249];
+    const BORDER = [188,207,220];
+    const TEXT = [25,35,45];
+    const MUTED = [90,105,118];
+    let y = 0;
 
-    try{
-      const canvas = await html2canvas(sheetContainer, {
-        scale: 2,
-        useCORS: true,
-        scrollY: -window.scrollY
-      });
+    const esc = v => String(v ?? '').trim();
+    const byId = id => esc(document.getElementById(id)?.value);
+    const arr = name => Array.from(document.querySelectorAll(`[name="${name}"]`)).map(el => esc(el.value));
+    const fmtMoney = v => {
+      const t = esc(v).replace(/^\$/, '').trim();
+      return t ? (t.startsWith('$') ? t : '$' + t) : '';
+    };
+    const hasAny = row => row.some(v => esc(v) !== '');
+    const isPlaceholder = v => {
+      const t = esc(v).toLowerCase();
+      return !t || ['select or type','vista or crew','qty','$','optional','none'].includes(t);
+    };
+    const isZeroish = v => {
+      const t = esc(v).replace(/[$,]/g,'').trim();
+      return t === '' || t === '0' || t === '0.0' || t === '0.00';
+    };
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const margin = 6;
-      const maxWidth = pdfWidth - margin * 2;
-      const maxHeight = pdfHeight - margin * 2;
-
-      let imgWidth = canvas.width;
-      let imgHeight = canvas.height;
-      const scale = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
-
-      imgWidth *= scale;
-      imgHeight *= scale;
-
-      const x = margin + (maxWidth - imgWidth) / 2;
-      const y = margin;
-
-      pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
-      return pdf;
-    } finally {
-      buttonRow.style.display = originalDisplay || 'flex';
-      if (validationBanner) validationBanner.style.display = bannerDisplay;
+    function line(x1,y1,x2,y2,color=BORDER,width=.25){
+      pdf.setDrawColor(...color); pdf.setLineWidth(width); pdf.line(x1,y1,x2,y2);
     }
+    function txt(text,x,yy,size=8,style='normal',color=TEXT,opts={}){
+      pdf.setFont('helvetica',style); pdf.setFontSize(size); pdf.setTextColor(...color);
+      pdf.text(String(text ?? ''),x,yy,opts);
+    }
+    function section(title){
+      ensureSpace(11);
+      pdf.setFillColor(...DARK); pdf.roundedRect(M,y,CONTENT_W,7,1,1,'F');
+      txt(title.toUpperCase(),M+3,y+4.8,7.6,'bold',[255,255,255]);
+      y += 9;
+    }
+    function ensureSpace(h){
+      if (y + h <= PAGE_H - M) return;
+      pdf.addPage([215.9,355.6],'portrait');
+      y = M;
+      continuationHeader();
+    }
+    function continuationHeader(){
+      pdf.setFillColor(...DARK); pdf.rect(0,0,PAGE_W,12,'F');
+      txt('VISTAGEOMATICS',M,7.8,10,'bold',[255,255,255]);
+      txt('DAILY TIMESHEET - CONTINUED',PAGE_W-M,7.8,7,'normal',[255,255,255],{align:'right'});
+      y = 17;
+    }
+    function field(label,value,x,w,yy=y){
+      txt(label,x,yy+3.4,6.3,'bold',MUTED);
+      txt(value || '-',x,yy+8.2,8.5,'normal',TEXT);
+      line(x,yy+10.3,x+w,yy+10.3);
+    }
+    function table(headers, rows, widths, opts={}){
+      const x=opts.x ?? M, total=widths.reduce((a,b)=>a+b,0);
+      const font=opts.fontSize ?? 7.2, headerH=6.4, pad=1.5, minH=6.4;
+      ensureSpace(headerH+minH+2);
+      pdf.setFillColor(...LIGHT); pdf.setDrawColor(...BORDER); pdf.setLineWidth(.25);
+      pdf.rect(x,y,total,headerH,'FD');
+      let cx=x;
+      headers.forEach((h,i)=>{ txt(h,cx+pad,y+4.2,6.2,'bold',DARK); cx+=widths[i]; if(i<headers.length-1) line(cx,y,cx,y+headerH); });
+      y += headerH;
+      const dataRows = rows.length ? rows : [['None']];
+      for (const row of dataRows){
+        const lines=row.map((v,i)=>pdf.splitTextToSize(esc(v)||'-',Math.max(3,widths[i]-pad*2)));
+        const rh=Math.max(minH, Math.max(...lines.map(a=>a.length))*3.45 + 2.2);
+        ensureSpace(rh+2);
+        // if a new page was inserted, repeat header
+        if (y < 22 && pdf.getNumberOfPages()>1){
+          pdf.setFillColor(...LIGHT); pdf.rect(x,y,total,headerH,'FD');
+          let hx=x; headers.forEach((h,i)=>{txt(h,hx+pad,y+4.2,6.2,'bold',DARK); hx+=widths[i]; if(i<headers.length-1) line(hx,y,hx,y+headerH);}); y+=headerH;
+        }
+        pdf.setFillColor(255,255,255); pdf.rect(x,y,total,rh,'FD');
+        cx=x;
+        row.forEach((v,i)=>{ txt(lines[i],cx+pad,y+4.2,font,'normal',TEXT); cx+=widths[i]; if(i<row.length-1) line(cx,y,cx,y+rh); });
+        y += rh;
+      }
+      y += 2;
+    }
+    function miniTable(title,headers,rows,widths,x,w){
+      const saveY=y;
+      pdf.setFillColor(...LIGHT); pdf.setDrawColor(...BORDER); pdf.roundedRect(x,y,w,6,1,1,'FD');
+      txt(title.toUpperCase(),x+2,y+4,6.7,'bold',DARK);
+      y += 7;
+      table(headers,rows,widths,{x,fontSize:6.8});
+      const endY=y;
+      y=saveY;
+      return endY;
+    }
+
+    // Header
+    pdf.setFillColor(...DARK); pdf.rect(0,0,PAGE_W,17,'F');
+    txt('VISTAGEOMATICS',M,8.3,12,'bold',[255,255,255]);
+    txt('OIL & GAS - DAILY TIMESHEET',M,13.1,6.8,'normal',[225,239,247]);
+    const dateText = byId('date');
+    txt(dateText || '',PAGE_W-M,10.5,8,'bold',[255,255,255],{align:'right'});
+    y = 22;
+
+    // Job information
+    section('Job Information');
+    const gap=4, fw=(CONTENT_W-gap*2)/3;
+    field('Client',byId('client'),M,fw);
+    field('Job Number',byId('job_no'),M+fw+gap,fw);
+    field('Date',byId('date'),M+(fw+gap)*2,fw);
+    y += 13;
+
+    // Locations
+    const locs=[];
+    const lsd=arr('loc_lsd[]'), sec=arr('loc_sec[]'), twp=arr('loc_twp[]'), rge=arr('loc_rge[]'), wm=arr('loc_wm[]'), notes=arr('loc_note[]');
+    for(let i=0;i<Math.max(lsd.length,sec.length,twp.length,rge.length,wm.length,notes.length);i++){
+      const r=[lsd[i],sec[i],twp[i],rge[i],wm[i],notes[i]]; if(hasAny(r)) locs.push(r);
+    }
+    if(locs.length){ section('Locations'); table(['LSD','SEC','TWP','RGE','W/M','Notes'],locs,[16,16,16,16,16,CONTENT_W-80]); }
+
+    // Personnel
+    section('Personnel');
+    const prole=arr('p_role[]'), pname=arr('p_name[]'), pwork=arr('p_work[]'), ptravel=arr('p_travel[]'), pcalc=arr('p_calc[]'), pstand=arr('p_standby[]'), pother=arr('p_other[]'), ptotal=arr('p_total[]');
+    const personnel=[];
+    for(let i=0;i<prole.length;i++){
+      const r=[prole[i],pname[i],pwork[i],ptravel[i],pcalc[i],pstand[i],pother[i],ptotal[i]]; if(hasAny(r.slice(1))) personnel.push(r);
+    }
+    table(['Role','Name','Work','Travel','Calc.','Standby','Other','Total'],personnel,[13,48,20,20,18,22,20,CONTENT_W-161]);
+    txt('Daily Total Hours: ' + (document.getElementById('dailyTotal')?.textContent || '0'),PAGE_W-M,y,7.2,'bold',DARK,{align:'right'}); y+=4;
+
+    // Vehicle/equipment/materials
+    section('Vehicle, Equipment & Materials');
+    const third=(CONTENT_W-gap*2)/3;
+    field('Odometer Start (km)',byId('odo_start'),M,third);
+    field('Odometer Finish (km)',byId('odo_finish'),M+third+gap,third);
+    field('Total (km)',byId('odo_total'),M+(third+gap)*2,third);
+    y += 13;
+    const eitem=arr('e_item[]'), eavail=arr('e_avail[]'), eused=arr('e_used[]'), ename=arr('e_name[]'), ehours=arr('e_hours[]');
+    const equips=[];
+    for(let i=0;i<eitem.length;i++){
+      const item=eitem[i], assigned=ename[i], hrs=ehours[i], used=eused[i];
+      const meaningfulItem=!isPlaceholder(item);
+      const meaningfulAssigned=!isPlaceholder(assigned);
+      const meaningfulHours=!isZeroish(hrs);
+      const meaningfulUsed=!isZeroish(used);
+      if(meaningfulItem || meaningfulAssigned || meaningfulHours || meaningfulUsed){
+        equips.push([meaningfulItem?item:'', eavail[i], used, meaningfulAssigned?assigned:'', meaningfulHours?hrs:'']);
+      }
+    }
+    const mitem=arr('m_item[]'), mqty=arr('m_qty[]'); const mats=[];
+    for(let i=0;i<mitem.length;i++){
+      const item=mitem[i], qty=mqty[i];
+      if(!isPlaceholder(item) || (!isZeroish(qty) && !isPlaceholder(qty))) mats.push([isPlaceholder(item)?'':item, isZeroish(qty)?'':qty]);
+    }
+    const leftW=(CONTENT_W-gap)/2, rightX=M+leftW+gap;
+    if(equips.length || mats.length){
+      const sy=y;
+      let eEnd=sy, mEnd=sy;
+      if(equips.length) eEnd=miniTable('Equipment',['Equipment','Avail.','Used','Assigned','Hours'],equips,[36,11,11,28,leftW-86],M,leftW);
+      y=sy;
+      if(mats.length) mEnd=miniTable('Materials',['Material','Qty'],mats,[leftW-20,20],rightX,leftW);
+      y=Math.max(eEnd,mEnd)+1;
+    }
+
+    // Work performed
+    section('Client Contact & Work Performed');
+    field('Client Field Contact',byId('client_contact'),M,60);
+    field('Site / Area',byId('site_name'),M+64,60);
+    field('Completed By',byId('completed_by'),M+128,CONTENT_W-128);
+    y += 13;
+    const ws=arr('w_start[]'), we=arr('w_end[]'), wd=arr('w_desc[]'); const workRows=[];
+    for(let i=0;i<wd.length;i++){ const r=[ws[i],we[i],wd[i]]; if(hasAny(r)) workRows.push(r); }
+    table(['Start','End','Description of Work Performed'],workRows,[24,24,CONTENT_W-48],{fontSize:7.4});
+
+    // Weather/rental
+    section('Weather, Road Conditions & Rental Equipment');
+    const weatherParts=[byId('weather'),byId('temp_c') ? byId('temp_c')+' °C' : '',byId('wind_kmh') ? byId('wind_kmh')+' km/h' : ''].filter(Boolean).join(' | ');
+    field('Weather',weatherParts,M,60);
+    field('Road Conditions',byId('road_conditions'),M+64,CONTENT_W-64);
+    y+=13;
+    field('Rental Equipment',byId('rental_equipment'),M,CONTENT_W-54);
+    field('Rental Cost',fmtMoney(byId('rental_cost')),PAGE_W-M-50,50);
+    y+=13;
+
+    // Meals/accommodation
+    section('Meals & Accommodation');
+    const mr=arr('meal_role[]'), mn=arr('meal_name[]'), mt=arr('meal_total[]'); const meals=[];
+    for(let i=0;i<Math.max(mr.length,mn.length,mt.length);i++){
+      const role=mr[i], name=mn[i], total=mt[i];
+      if(!isPlaceholder(role) || !isPlaceholder(name) || !isZeroish(total)) meals.push([isPlaceholder(role)?'':role,isPlaceholder(name)?'':name,isZeroish(total)?'':fmtMoney(total)]);
+    }
+    const accRows=[];
+    const accPairs=[
+      ['Accommodation',byId('accom_name')],['Location',byId('accom_location')],['Booked Under',byId('accom_booked_under')],
+      ['Rooms',byId('accom_rooms')],['Cost / Day',fmtMoney(byId('accom_cost_day'))],['Tax',fmtMoney(byId('accom_tax'))],['Total',fmtMoney(byId('accom_total'))]
+    ].filter(p=>p[1]);
+    const sy2=y;
+    let mealEnd=sy2, accEnd=sy2;
+    if(meals.length) mealEnd=miniTable('Meals',['Role','Name','Meal Total'],meals,[15,leftW-40,25],M,leftW);
+    y=sy2;
+    if(accPairs.length) accEnd=miniTable('Accommodation',['Item','Details'],accPairs,[31,leftW-31],rightX,leftW);
+    y=Math.max(mealEnd,accEnd)+1;
+    if(!meals.length && !accPairs.length){ txt('No meals or accommodation entered.',M,y+3.5,7,'normal',MUTED); y+=7; }
+    if(byId('accom_notes')){
+      txt('Accommodation Notes',M,y+3.5,6.3,'bold',MUTED);
+      const noteLines=pdf.splitTextToSize(byId('accom_notes'),CONTENT_W-2);
+      txt(noteLines,M,y+8,7.4,'normal',TEXT); y += Math.max(10,noteLines.length*3.6+6);
+    }
+
+    // Signatures — keep heading and boxes together so the heading is never orphaned.
+    ensureSpace(31);
+    section('Signatures');
+    const sigGap=6, sigW=(CONTENT_W-sigGap)/2, sigH=16;
+    const sigY=y;
+    pdf.setDrawColor(...BORDER); pdf.roundedRect(M,sigY,sigW,sigH,1,1,'S'); pdf.roundedRect(M+sigW+sigGap,sigY,sigW,sigH,1,1,'S');
+    txt("Party Chief's Signature",M+2,sigY+4,6.4,'bold',MUTED);
+    txt("Client's Signature",M+sigW+sigGap+2,sigY+4,6.4,'bold',MUTED);
+    const pcCanvas=document.getElementById('sig_pc'), clCanvas=document.getElementById('sig_client');
+    try{
+      if(pcCanvas && !isCanvasBlank(pcCanvas)) pdf.addImage(pcCanvas.toDataURL('image/png'),'PNG',M+3,sigY+5,sigW-6,sigH-7,undefined,'FAST');
+      if(clCanvas && !isCanvasBlank(clCanvas)) pdf.addImage(clCanvas.toDataURL('image/png'),'PNG',M+sigW+sigGap+3,sigY+5,sigW-6,sigH-7,undefined,'FAST');
+    }catch(e){ console.warn('Signature image could not be added',e); }
+    y += sigH+2;
+
+    // Footer on every page
+    const pages=pdf.getNumberOfPages();
+    for(let p=1;p<=pages;p++){
+      pdf.setPage(p);
+      line(M,PAGE_H-7,PAGE_W-M,PAGE_H-7,[210,220,228],.2);
+      txt('Vista Geomatics Ltd. | Oil & Gas Daily Timesheet',M,PAGE_H-3.5,6,'normal',MUTED);
+      txt(`Page ${p} of ${pages}`,PAGE_W-M,PAGE_H-3.5,6,'normal',MUTED,{align:'right'});
+    }
+    pdf.setPage(1);
+    return pdf;
   }
 
   if (downloadBtn){
     downloadBtn.addEventListener('click', async () => {
-      const filename = getFilename();
-      const pdf = await generatePdf();
-      pdf.save(filename);
+      const originalText = downloadBtn.textContent;
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = 'Creating PDF...';
+      try {
+        const filename = getFilename();
+        const finalPdf = await buildFinalPdf();
+        savePdfResult(finalPdf, filename);
+      } catch (err) {
+        console.error('PDF download failed:', err);
+        alert('The PDF could not be created. Please refresh the page and try again.');
+      } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = originalText;
+      }
     });
   }
 
@@ -1977,9 +2363,9 @@ function refreshEquipNameOptions(){
   // --- Staff names ---
   const STAFF_NAMES = [
     'Raymond Halldorson',
+    'Shane Lavis',
     'Jason Welcher',
     'Trent Armstrong',
-    'Marc Boudreau',
   ];
 
   // --- Work description suggestions ---
@@ -2000,7 +2386,7 @@ function refreshEquipNameOptions(){
    * @param {function(string): string[]} getSuggestions  - returns array of display strings for a query
    * @param {function(string): string}  [onSelect]       - optional transform when user picks (default: use as-is)
    */
-  function bindAC(inp, list, getSuggestions, onSelect) {
+  function bindAC(inp, list, getSuggestions, onSelect, showOnEmptyFocus = false) {
     if (!inp || !list) return;
     let activeIdx = -1;
 
@@ -2050,7 +2436,7 @@ function refreshEquipNameOptions(){
 
     inp.addEventListener('focus', () => {
       const q = inp.value.trim().toLowerCase();
-      if (q) open(getSuggestions(q));
+      if (q || showOnEmptyFocus) open(getSuggestions(q));
     });
 
     inp.addEventListener('blur', () => setTimeout(close, 150));
@@ -2096,13 +2482,26 @@ function refreshEquipNameOptions(){
     clientResolve
   );
 
-  // --- Staff name autocomplete: match on any part ---
+  // --- Staff name autocomplete: suggested names + manual entry always allowed ---
   function staffSuggestions(q) {
-    return STAFF_NAMES.filter(n => n.toLowerCase().includes(q));
+    return STAFF_NAMES.filter(n => !q || n.toLowerCase().includes(q));
   }
 
-  bindAC(document.getElementById('completed_by'),    document.getElementById('completedBySuggest'),  staffSuggestions);
-  bindAC(document.getElementById('accom_booked_under'), document.getElementById('accomBookedSuggest'), staffSuggestions);
+  function staffSuggestionsForInput(inp, q) {
+    const row = inp.closest('tr');
+    const role = (row?.querySelector('input[name="p_role[]"], input[name="meal_role[]"]')?.value || '').trim().toUpperCase();
+    let allowed = STAFF_NAMES;
+    if (role === 'PC' || role.includes('PARTY CHIEF')) {
+      allowed = ['Raymond Halldorson', 'Jason Welcher', 'Trent Armstrong'];
+    } else if (role === 'R1' || role.includes('ROD') || role.includes('ASSISTANT')) {
+      allowed = ['Shane Lavis'];
+    }
+
+    return allowed.filter(n => !q || n.toLowerCase().includes(q));
+  }
+
+  bindAC(document.getElementById('completed_by'), document.getElementById('completedBySuggest'), staffSuggestions, null, true);
+  bindAC(document.getElementById('accom_booked_under'), document.getElementById('accomBookedSuggest'), staffSuggestions, null, true);
 
   // --- Wire name/meal/work rows that are added dynamically ---
   // We patch initEvidencePage-style: after createPersonnelRow / createWorkRow / createMealRow,
@@ -2115,7 +2514,7 @@ function refreshEquipNameOptions(){
     const list = inp.closest('td')?.querySelector('.ac-name-drop') ||
                  inp.parentElement?.querySelector('.ac-name-drop');
     if (!inp || !list) return;
-    bindAC(inp, list, staffSuggestions);
+    bindAC(inp, list, q => staffSuggestionsForInput(inp, q), null, true);
   }
 
   function bindACToWorkInput(inp) {
@@ -2232,35 +2631,43 @@ function refreshEquipNameOptions(){
 
   if (modalConfirmBtn) {
     modalConfirmBtn.addEventListener('click', async () => {
-      hideSubmitModal();
+      const originalText = modalConfirmBtn.textContent;
+      modalConfirmBtn.disabled = true;
+      modalConfirmBtn.textContent = 'Creating PDF...';
+      try {
+        const filename = getFilename();
+        const finalPdf = await buildFinalPdf();
+        savePdfResult(finalPdf, filename);
 
-      const filename = getFilename();
-      const pdf = await generatePdf();
-      pdf.save(filename);
+        const client = (document.getElementById('client')?.value || '').trim();
+        const job    = (document.getElementById('job_no')?.value || '').trim();
+        const date   = (document.getElementById('date')?.value || '').trim();
+        const subject = 'Daily Timesheet - ' + filename;
+        const bodyLines = [
+          'Please find the daily timesheet attached.',
+          '',
+          client ? 'Client: ' + client : '',
+          job    ? 'Job Number: ' + job : '',
+          date   ? 'Date: ' + date : '',
+          '',
+          'Attach the downloaded PDF before sending.',
+          '',
+          'Sent from the Vista Geomatics daily timesheet form.'
+        ].filter(Boolean).join('\r\n');
 
-      const client = (document.getElementById('client')?.value || '').trim();
-      const job    = (document.getElementById('job_no')?.value || '').trim();
-      const date   = (document.getElementById('date')?.value || '').trim();
-
-      const subject = 'Daily Timesheet - ' + filename;
-      const bodyLines = [
-        'Please find the daily timesheet attached.',
-        '',
-        client ? 'Client: ' + client : '',
-        job    ? 'Job Number: ' + job : '',
-        date   ? 'Date: ' + date : '',
-        '',
-        'Attach the downloaded PDF before sending.',
-        '',
-        'Sent from the Vista Geomatics daily timesheet form.'
-      ].filter(Boolean).join('%0D%0A');
-
-      window.location.href = 'mailto:jasonw@vistageomatics.com'
-        + '?subject=' + encodeURIComponent(subject)
-        + '&body=' + bodyLines;
-
-      // Reset only after successful submission path
-      setTimeout(fullReset, 800);
+        hideSubmitModal();
+        const mailto = 'mailto:jasonw@vistageomatics.com'
+          + '?subject=' + encodeURIComponent(subject)
+          + '&body=' + encodeURIComponent(bodyLines);
+        setTimeout(() => { window.location.href = mailto; }, 150);
+        // Do not auto-clear here; this prevents data loss if the mail client is blocked or closed.
+      } catch (err) {
+        console.error('Submit failed:', err);
+        alert('The timesheet could not be submitted because the PDF could not be created. Please refresh the page and try again.');
+      } finally {
+        modalConfirmBtn.disabled = false;
+        modalConfirmBtn.textContent = originalText;
+      }
     });
   }
 
