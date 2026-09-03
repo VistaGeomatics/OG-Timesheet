@@ -539,6 +539,19 @@
     }
     .quality-note{margin:0 0 14px;}
 
+
+
+    /* Touch-friendly autocomplete for PC and iPad */
+    .ac-dropdown li{
+      min-height:42px;
+      display:flex;
+      align-items:center;
+      padding:9px 12px;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+    #accomNameSuggest{z-index:100000;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+
 </style>
 </head>
 
@@ -856,7 +869,10 @@
             <div class="grid-2">
               <div>
                 <label for="accom_name">Accommodation Name</label>
-                <input type="text" id="accom_name" name="accom_name" placeholder="e.g., Super 8">
+                <div style="position:relative;">
+                  <input type="text" id="accom_name" name="accom_name" placeholder="e.g., Super 8" autocomplete="off">
+                  <ul id="accomNameSuggest" class="ac-dropdown"></ul>
+                </div>
               </div>
               <div>
                 <label for="accom_location">Accommodation Location</label>
@@ -1754,12 +1770,14 @@ function refreshEquipNameOptions(){
       drop.innerHTML = names.map(n => `<li data-value="${n}">${n}</li>`).join('');
       drop.classList.add('open');
       drop.querySelectorAll('li').forEach(li => {
-        li.addEventListener('mousedown', e => {
+        const chooseMeal = e => {
           e.preventDefault();
           nameEl.value = li.dataset.value || li.textContent || '';
           drop.classList.remove('open');
           saveDraft();
-        });
+        };
+        if (window.PointerEvent) li.addEventListener('pointerdown', chooseMeal);
+        else li.addEventListener('mousedown', chooseMeal);
       });
     }
 
@@ -2681,6 +2699,30 @@ function refreshEquipNameOptions(){
     { keys: ['strathcona','strathcona resources','strathcona resources ltd','strathcona resources ltd.'], label: 'Strathcona Resources Ltd.' },
   ];
 
+
+  // --- Accommodation suggestions ---
+  const ACCOMMODATION_NAMES = [
+    'Best Western',
+    'Comfort Inn & Suites',
+    'Four Points',
+    'Quality Inn',
+    'Radisson',
+    'Sandman',
+    'Days Inn',
+    'Hampton Inn',
+    'Holiday Inn',
+    'Ramada',
+    'Super 8',
+    'Travelodge',
+    'Howard Johnson',
+    'Thrift Lodge',
+    'Foxwood Inn & Suites',
+    'Service Plus Inns & Suites',
+    'Walking Eagle Inn & Lodge',
+    'Canalta Hotel',
+    'Tamarack Motor Inn'
+  ];
+
   // --- Staff names ---
   const STAFF_NAMES = [
     'Raymond Halldorson',
@@ -2733,9 +2775,17 @@ function refreshEquipNameOptions(){
       suggestions.forEach(text => {
         const li = document.createElement('li');
         li.textContent = text;
-        li.addEventListener('mousedown', e => {
+        const choose = e => {
           e.preventDefault();
           pick(text);
+        };
+        // pointerdown works on modern desktop browsers and iPadOS Safari.
+        // mousedown remains as a fallback for older desktop browsers.
+        if (window.PointerEvent) li.addEventListener('pointerdown', choose);
+        else li.addEventListener('mousedown', choose);
+        li.addEventListener('click', e => {
+          if (!window.PointerEvent) return;
+          e.preventDefault();
         });
         list.appendChild(li);
       });
@@ -2801,6 +2851,20 @@ function refreshEquipNameOptions(){
     document.getElementById('clientSuggest'),
     clientSuggestions,
     clientResolve
+  );
+
+  function accommodationSuggestions(q) {
+    const query = (q || '').trim().toLowerCase();
+    return ACCOMMODATION_NAMES.filter(name =>
+      !query || name.toLowerCase().includes(query)
+    );
+  }
+
+  bindAC(
+    document.getElementById('accom_name'),
+    document.getElementById('accomNameSuggest'),
+    accommodationSuggestions,
+    null
   );
 
   // --- Staff name autocomplete: suggested names + manual entry always allowed ---
@@ -2950,11 +3014,11 @@ function refreshEquipNameOptions(){
       `<div class="quality-issue"><div class="quality-issue-number">${i + 1}</div><div>${escapeHtml(issue)}</div></div>`
     ).join('');
 
-    modal.classList.add('show');
+    modal.classList.add('active');
     modal.setAttribute('aria-hidden','false');
 
     const close = () => {
-      modal.classList.remove('show');
+      modal.classList.remove('active');
       modal.setAttribute('aria-hidden','true');
     };
 
