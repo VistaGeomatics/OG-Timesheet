@@ -956,7 +956,7 @@
         <button type="button" class="btn-primary" id="submitBtn">Submit</button>
       </div>
 
-      <div class="version-tag">Daily Timesheet v4.1</div>
+      <div class="version-tag">Daily Timesheet v4.2</div>
     </form>
   </div>
 </div>
@@ -2998,15 +2998,48 @@ function refreshEquipNameOptions(){
       issues.push(`Job Number "${job}" appears to be a nonstandard job number. Please confirm it is correct.`);
     }
 
-    // Alberta LSDs are numbered 1 through 16.
+    // Alberta legal land description checks.
     if (locBody){
       Array.from(locBody.querySelectorAll('tr')).forEach((tr, i) => {
-        const el = tr.querySelector('input[name="loc_lsd[]"]');
-        const raw = (el?.value || '').trim();
-        if (!raw) return;
-        const n = Number(raw);
-        if (!Number.isInteger(n) || n < 1 || n > 16) {
-          issues.push(`Location ${i + 1}: LSD "${raw}" is outside the expected Alberta range of 1–16.`);
+        const lsdRaw = (tr.querySelector('input[name="loc_lsd[]"]')?.value || '').trim();
+        const secRaw = (tr.querySelector('input[name="loc_sec[]"]')?.value || '').trim();
+        const twpRaw = (tr.querySelector('input[name="loc_twp[]"]')?.value || '').trim();
+        const rgeRaw = (tr.querySelector('input[name="loc_rge[]"]')?.value || '').trim();
+        const wmRaw  = (tr.querySelector('input[name="loc_wm[]"]')?.value || '').trim();
+
+        if (lsdRaw) {
+          const lsd = Number(lsdRaw);
+          if (!Number.isInteger(lsd) || lsd < 1 || lsd > 16) {
+            issues.push(`Location ${i + 1}: LSD "${lsdRaw}" is outside the expected Alberta range of 1–16.`);
+          }
+        }
+
+        if (secRaw) {
+          const sec = Number(secRaw);
+          if (!Number.isInteger(sec) || sec < 1 || sec > 36) {
+            issues.push(`Location ${i + 1}: Section "${secRaw}" is outside the expected range of 1–36.`);
+          }
+        }
+
+        if (twpRaw) {
+          const twp = Number(twpRaw);
+          if (!Number.isInteger(twp) || twp < 1 || twp > 126) {
+            issues.push(`Location ${i + 1}: Township "${twpRaw}" is outside the expected Alberta range of 1–126.`);
+          }
+        }
+
+        if (rgeRaw) {
+          const rge = Number(rgeRaw);
+          if (!Number.isInteger(rge) || rge < 1 || rge > 30) {
+            issues.push(`Location ${i + 1}: Range "${rgeRaw}" is outside the expected Alberta range of 1–30.`);
+          }
+        }
+
+        if (wmRaw) {
+          const wm = Number(String(wmRaw).replace(/[^0-9]/g, ''));
+          if (![4,5,6].includes(wm)) {
+            issues.push(`Location ${i + 1}: Meridian "${wmRaw}" is not a valid Alberta meridian. Expected 4, 5, or 6.`);
+          }
         }
       });
     }
