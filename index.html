@@ -518,6 +518,27 @@
     #mealsTable, #mealsTable tbody, #mealsTable tr, #mealsTable td { overflow: visible !important; }
     #mealsTable .ac-dropdown { min-width: 210px; max-height: none; overflow: visible; z-index: 10050; }
 
+
+    .quality-modal-card{max-width:560px;text-align:left;}
+    .quality-icon{
+      width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      margin:0 auto 10px;font-size:1.35rem;font-weight:800;background:#fff3cd;color:#7a5200;
+      border:1px solid #ffe08a;
+    }
+    .quality-modal-card h3{text-align:center;margin-bottom:6px;}
+    .quality-intro,.quality-note{color:var(--text-muted);font-size:.86rem;line-height:1.45;}
+    .quality-intro{text-align:center;margin:0 auto 14px;max-width:460px;}
+    .quality-issue-list{display:flex;flex-direction:column;gap:8px;margin:12px 0 14px;}
+    .quality-issue{
+      display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border-soft);
+      border-radius:8px;background:#f8fafc;font-size:.84rem;line-height:1.4;
+    }
+    .quality-issue-number{
+      flex:0 0 24px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:#eef2f7;font-weight:700;font-size:.74rem;
+    }
+    .quality-note{margin:0 0 14px;}
+
 </style>
 </head>
 
@@ -925,6 +946,20 @@
 </div>
 
 <!-- Submit confirmation modal -->
+<div class="modal-overlay" id="qualityModal">
+  <div class="modal quality-modal-card" role="dialog" aria-modal="true" aria-labelledby="qualityTitle">
+    <div class="quality-icon">!</div>
+    <h3 id="qualityTitle">Quick Quality Review</h3>
+    <p class="quality-intro">We noticed a few entries that may need a second look before this timesheet is submitted.</p>
+    <div id="qualityIssueList" class="quality-issue-list"></div>
+    <p class="quality-note">If everything is correct, you can continue. Otherwise, return to the form and make your changes.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn-secondary" id="qualityBackBtn">Review Form</button>
+      <button type="button" class="btn-primary" id="qualityContinueBtn">Continue Anyway</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="submitModal">
   <div class="modal-box">
     <div class="modal-icon">📋</div>
@@ -2842,7 +2877,7 @@ function refreshEquipNameOptions(){
     // Job number: flag anything shorter than 8 characters.
     const job = (document.getElementById('job_no')?.value || '').trim();
     if (job && job.length < 8) {
-      issues.push(`Job Number "${job}" is less than 8 characters.`);
+      issues.push(`Job Number "${job}" appears to be a nonstandard job number. Please confirm it is correct.`);
     }
 
     // Alberta LSDs are numbered 1 through 16.
@@ -2864,7 +2899,7 @@ function refreshEquipNameOptions(){
         const item = (tr.querySelector('input[name="m_item[]"]')?.value || '').trim();
         const qty  = (tr.querySelector('input[name="m_qty[]"]')?.value || '').trim();
         if (item && !qty) {
-          issues.push(`Materials row ${i + 1}: "${item}" has no quantity entered.`);
+          issues.push(`"${item}" is listed under Materials Used, but no quantity has been entered.`);
         }
       });
     }
@@ -2895,22 +2930,45 @@ function refreshEquipNameOptions(){
       }
     });
     if (profanityHits.length) {
-      issues.push(`Possible inappropriate language detected (${profanityHits.slice(0,3).join('; ')}${profanityHits.length > 3 ? '; …' : ''}).`);
+      issues.push(`Possible inappropriate language was detected in a text entry. Please review the wording before submitting.`);
     }
 
     return issues;
   }
 
-  function confirmPossibleIssues(){
-    const issues = collectPossibleIssues();
-    if (!issues.length) return true;
+  function showPossibleIssues(issues, onContinue){
+    const modal = document.getElementById('qualityModal');
+    const list = document.getElementById('qualityIssueList');
+    const back = document.getElementById('qualityBackBtn');
+    const cont = document.getElementById('qualityContinueBtn');
+    if (!modal || !list || !back || !cont) {
+      if (onContinue) onContinue();
+      return;
+    }
 
-    const message =
-      'Please review these possible issues before submitting:\\n\\n'
-      + issues.map((issue, i) => `${i + 1}. ${issue}`).join('\\n')
-      + '\\n\\nSelect OK to continue anyway, or Cancel to return to the form and make changes.';
+    list.innerHTML = issues.map((issue, i) =>
+      `<div class="quality-issue"><div class="quality-issue-number">${i + 1}</div><div>${escapeHtml(issue)}</div></div>`
+    ).join('');
 
-    return window.confirm(message);
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden','false');
+
+    const close = () => {
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden','true');
+    };
+
+    back.onclick = close;
+    cont.onclick = () => {
+      close();
+      if (onContinue) onContinue();
+    };
+  }
+
+  function escapeHtml(value){
+    return String(value || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
   }
 
   const submitModal   = document.getElementById('submitModal');
@@ -3073,7 +3131,11 @@ function refreshEquipNameOptions(){
     submitBtn.addEventListener('click', () => {
       if (!validateForm()) return;
       saveCrewPreferences();
-      if (!confirmPossibleIssues()) return;
+      const issues = collectPossibleIssues();
+      if (issues.length) {
+        showPossibleIssues(issues, showSubmitModal);
+        return;
+      }
       showSubmitModal();
     });
   }</script>
